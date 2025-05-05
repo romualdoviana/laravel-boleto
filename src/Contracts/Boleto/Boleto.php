@@ -22,6 +22,7 @@ interface Boleto
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
     const COD_BANCO_DELCRED = '435';
+    const COD_BANCO_BV = '655';
     const COD_BANCO_SICREDI = '748';
     const COD_BANCO_BANRISUL = '041';
     const COD_BANCO_BANCOOB = '756';
@@ -182,6 +183,13 @@ interface Boleto
      * @return mixed
      */
     public function getDiasProtesto($default = 0);
+
+    /**
+     * @param int $default
+     *
+     * @return mixed
+     */
+    public function getTipoProtesto($default = 0);
 
     /**
      * @param int $default

@@ -129,6 +129,12 @@ abstract class AbstractBoleto implements BoletoContract
     public $diasProtesto = 0;
 
     /**
+     * Tipo de prostesto se dias úteis, dias corridos, não protestar
+     * @var int
+     */
+    public $tipoProtesto = 0;
+
+    /**
      * Dias para baixa automática
      *
      * @var int
@@ -586,7 +592,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setCarteira($carteira)
     {
         if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
-            throw new ValidationException('Carteira não disponível!');
+            throw new ValidationException('Carteira `' . $$carteira . '` não disponível! Carteiras válidas: ' . implode(', ', $this->getCarteiras()));
         }
         $this->carteira = $carteira;
 
@@ -1503,6 +1509,38 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Seta dias para protesto
+     * 0 = Não protestar, 1 = Dias corridos, 2 = Dias úteis, 3 = Negativar dias corridos, 4 = Não negativar
+     * @param int $tipoProtesto
+     *
+     * @return AbstractBoleto
+     * @throws Exception
+     */
+    public function setTipoProtesto($tipoProtesto)
+    {
+        $tipoProtesto = (int) $tipoProtesto;
+        $this->tipoProtesto = $tipoProtesto > 0 ? $tipoProtesto : 0;
+
+        if (! empty($tipoProtesto) && $this->getDiasProtesto() == 0) {
+            throw new Exception('Você deve informar dias de protesto se informar tipo de protesto');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retorna os diasProtesto
+     *
+     * @param int $default
+     *
+     * @return int
+     */
+    public function getTipoProtesto($default = 0)
+    {
+        return $this->tipoProtesto > 0 ? $this->tipoProtesto : $default;
+    }
+
+    /**
      * Seta os dias para baixa automática
      *
      * @param int $baixaAutomatica
@@ -1510,7 +1548,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        $exception = sprintf('O banco %s não suporta baixa automática, pode usar também', basename(get_class($this)));
+        $exception = sprintf('O banco %s não suporta baixa automática', substr(strrchr(get_class($this), '\\'), 1));
         throw new ValidationException($exception);
     }
 
