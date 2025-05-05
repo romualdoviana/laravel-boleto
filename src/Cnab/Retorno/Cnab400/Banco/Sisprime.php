@@ -24,19 +24,19 @@ class Sisprime extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $ocorrencias = [
-        '01' => 'Pago (Título protestado pago em cartório)',
-        '02' => 'Instrução Confirmada',
-        '03' => 'Instrução Rejeitada',
-        '04' => 'Sustado Judicial (Título protestado sustado judicialmente)',
+        '02' => 'Entrada Confirmada',
+        '03' => 'Entrada Rejeitada',
         '06' => 'Liquidação Normal',
-        '07' => 'Liquidação em Condicional (Título liquidado em cartório com cheque do próprio devedor)',
-        '08' => 'Sustado Definitivo (Título protestado sustado judicialmente)',
-        '09' => 'Liquidação de Título Descontado',
-        '10' => 'Protesto solicitado',
-        '11' => 'Protesto Em cartório',
-        '12' => 'Sustação solicitada',
-        '13' => 'Títulos Descontado (título utilizado como garantia em operação de desconto)',
-        '14' => 'Títulos Descontável (título com desistência de garantia em operação de desconto)',
+        '09' => 'Baixado Automat. via Arquivo',
+        '10' => 'Baixado conforme instrução da Agência',
+        '12' => 'Abatimento Concedido',
+        '13' => 'Abatimento Cancelado',
+        '14' => 'Vencimento Alterado',
+        '17' => 'Liquidação após baixa ou Título não registrado',
+        '28' => 'Débito de tarifas/custas',
+        '30' => 'Alteração de Outros Dados Rejeitados',
+        '32' => 'Instrução Rejeitada',
+        '33' => 'Confirmação Pedido Alteração Outros Dados',
     ];
 
     /**
@@ -289,9 +289,8 @@ class Sisprime extends AbstractRetorno implements RetornoCnab400
 
         //NossoNúmero Sisprime só tem 11 dígitos, por isso da pra pegar apartir do campo 52 em vez de começar do 46
         //pois o resto dos campos será preenchido com valor '0'
-        $d->setNossoNumero($this->rem(52, 62, $detalhe))
-            ->setNumeroDocumento($this->rem(38, 62, $detalhe))  //SEU NUMERO
-            
+        $d->setNossoNumero($this->rem(71, 81, $detalhe))
+            ->setNumeroDocumento($this->rem(117, 123, $detalhe))  //SEU NUMERO
             ->setOcorrencia($this->rem(109, 110, $detalhe)) //MOVIMENTO
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->dataOcorrencia)//Data de geração do arquivo de remessa ou data de quitação do registro

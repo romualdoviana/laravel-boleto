@@ -1088,6 +1088,7 @@ final class Util
             BoletoContract::COD_BANCO_CRESOL    => 'Banco\\Cresol',
             BoletoContract::COD_BANCO_AILOS     => 'Banco\\Ailos',
             BoletoContract::COD_BANCO_DAYCOVAL  => 'Banco\\Daycoval',
+            BoletoContract::COD_BANCO_SISPRIME  => 'Banco\\Sisprime',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
