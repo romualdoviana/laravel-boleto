@@ -295,15 +295,16 @@ class Sisprime extends AbstractRetorno implements RetornoCnab400
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->dataOcorrencia)//Data de geração do arquivo de remessa ou data de quitação do registro
             ->setDataVencimento($this->rem(147, 152, $detalhe))
-            ->setDataCredito($this->rem(176, 181, $detalhe))
+            ->setDataCredito($this->dataOcorrencia)
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
             ->setValorTarifa(Util::nFloat($this->rem(182, 188, $detalhe) / 100, 2, false))
-            // ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
+            ->setValorIOF(0)//Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
             ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
             ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
             ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false));
-        // ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(202, 214, $detalhe)/100, 2, false))
+            ->setValorOutrasDespesas(0);
 
         //Adicionar array_fill para garantir que array tenha 5 casas
         $msgAdicional = str_split($this->rem(319, 326, $detalhe), 2) + array_fill(0, 5, '');
