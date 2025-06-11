@@ -161,7 +161,7 @@ class Sisprime extends AbstractRemessa implements RemessaContract
         $this->add(67,70, Util::formatCnab('9', $boleto->getMulta() > 0 ? $boleto->getMulta() : '0', 3));
         
         $this->add(71, 81, Util::formatCnab('9', $boleto->getNossoNumero(), 11));
-        $this->add(82, 82, CalculoDV::sisprimeNossoNumero($boleto->getCarteira().$boleto->getNossoNumero()));
+        $this->add(82, 82, CalculoDV::sisprimeNossoNumero($boleto->getCarteira().$boleto->getNumero()));
         
         $this->add(83, 92, Util::formatCnab('9', 0, 10));
         $this->add(93, 93, 2);
