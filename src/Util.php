@@ -1074,6 +1074,7 @@ final class Util
             BoletoContract::COD_BANCO_UNICRED   => 'Banco\\Unicred',
             BoletoContract::COD_BANCO_BRADESCO  => 'Banco\\Bradesco',
             BoletoContract::COD_BANCO_ABC       => 'Banco\\Abc',
+            BoletoContract::COD_BANCO_C6        => 'Banco\\C6',
             BoletoContract::COD_BANCO_GRAFENO   => 'Banco\\Grafeno',
             BoletoContract::COD_BANCO_FIBRA     => 'Banco\\Fibra',
             BoletoContract::COD_BANCO_ITAU      => 'Banco\\Itau',
