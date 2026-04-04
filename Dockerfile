@@ -1,4 +1,4 @@
-FROM php:7.3.25-fpm-alpine3.11
+FROM php:8.4-fpm-alpine3.20
 
 RUN apk add --no-cache \
   openssl \
@@ -8,13 +8,12 @@ RUN apk add --no-cache \
   $PHPIZE_DEPS \
   libzip-dev \
   zlib-dev \
-  libsodium-dev \
   icu-dev \
   libpng-dev
 
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install zip sodium intl gd
-RUN docker-php-ext-enable zip sodium
+RUN docker-php-ext-install zip intl gd
+RUN docker-php-ext-enable zip
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

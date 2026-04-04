@@ -7,11 +7,12 @@ use Illuminate\Mail\Mailer;
 use Illuminate\Foundation\Application;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Container\ContainerExceptionInterface;
-use Eduardokum\LaravelMailAutoEmbed\Listeners\SymfonyEmbedImages;
-use Eduardokum\LaravelMailAutoEmbed\Contracts\Listeners\EmbedImages;
 
 class LaravelBoletoMailer extends Mailer
 {
+    private const EMBED_IMAGES_CONTRACT = 'Eduardokum\\LaravelMailAutoEmbed\\Contracts\\Listeners\\EmbedImages';
+    private const SYMFONY_EMBED_IMAGES_LISTENER = 'Eduardokum\\LaravelMailAutoEmbed\\Listeners\\SymfonyEmbedImages';
+
     /**
      * @param $message
      * @param $data
@@ -21,11 +22,15 @@ class LaravelBoletoMailer extends Mailer
      */
     protected function shouldSendMessage($message, $data = [])
     {
-        if (self::isLaravel9Plus() && ! app()->bound(EmbedImages::class)) {
+        $embedImagesContract = self::EMBED_IMAGES_CONTRACT;
+        $symfonyEmbedImagesListener = self::SYMFONY_EMBED_IMAGES_LISTENER;
+        $embedIsBound = class_exists($embedImagesContract) && app()->bound($embedImagesContract);
+
+        if (self::isLaravel9Plus() && ! $embedIsBound && class_exists($symfonyEmbedImagesListener)) {
             try {
-                (new SymfonyEmbedImages(config()->get('mail-auto-embed')))->handle($message);
+                (new $symfonyEmbedImagesListener(config()->get('mail-auto-embed')))->handle($message);
+            } catch (Exception $e) {
             }
-            catch (Exception $e){}
         }
 
         return parent::shouldSendMessage($message, $data);

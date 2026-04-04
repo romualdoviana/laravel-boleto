@@ -1591,7 +1591,49 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogo()
     {
-        return $this->logo ?: 'https://dummyimage.com/300x70/f5/0.png&text=Sem+Logo';
+        if ($this->logo) {
+            return $this->logo;
+        }
+
+        $logoTemporario = $this->getLogoPadraoTemporario();
+        if ($logoTemporario) {
+            return $logoTemporario;
+        }
+
+        $logoBanco = $this->getLogoBanco();
+        if ($logoBanco) {
+            return $logoBanco;
+        }
+
+        // Fallback final para manter retrocompatibilidade em cenários extremos.
+        return 'https://dummyimage.com/300x70/f5/0.png&text=Sem+Logo';
+    }
+
+    /**
+     * Gera um logo local para evitar dependência de rede no fallback do logotipo.
+     *
+     * @return string|null
+     */
+    private function getLogoPadraoTemporario()
+    {
+        static $logoPadrao = null;
+
+        if ($logoPadrao && is_file($logoPadrao)) {
+            return $logoPadrao;
+        }
+
+        $logoPadrao = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'laravel-boleto-sem-logo.png';
+        if (is_file($logoPadrao)) {
+            return $logoPadrao;
+        }
+
+        $pngBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
+        $conteudo = base64_decode($pngBase64);
+        if ($conteudo === false) {
+            return null;
+        }
+
+        return @file_put_contents($logoPadrao, $conteudo) !== false ? $logoPadrao : null;
     }
 
     /**

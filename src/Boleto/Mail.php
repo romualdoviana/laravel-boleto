@@ -18,12 +18,13 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelMailAutoEmbed\Listeners\SwiftEmbedImages;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransportFactory;
-use Eduardokum\LaravelMailAutoEmbed\Contracts\Listeners\EmbedImages;
 
 class Mail
 {
+    private const EMBED_IMAGES_CONTRACT = 'Eduardokum\\LaravelMailAutoEmbed\\Contracts\\Listeners\\EmbedImages';
+    private const SWIFT_EMBED_IMAGES_LISTENER = 'Eduardokum\\LaravelMailAutoEmbed\\Listeners\\SwiftEmbedImages';
+
     /**
      * @var Boleto
      */
@@ -353,8 +354,13 @@ class Mail
         try {
             $html = $this->build($template);
 
-            if (! LaravelBoletoMailer::isLaravel9Plus() && ! app()->bound(EmbedImages::class)) {
-                $this->getMailer()->getSwiftMailer()->registerPlugin(new SwiftEmbedImages(config()->get('mail-auto-embed')));
+            $embedImagesContract = self::EMBED_IMAGES_CONTRACT;
+            $swiftEmbedImagesListener = self::SWIFT_EMBED_IMAGES_LISTENER;
+            $embedIsBound = class_exists($embedImagesContract) && app()->bound($embedImagesContract);
+            $swiftEmbedAvailable = class_exists($swiftEmbedImagesListener);
+
+            if (! LaravelBoletoMailer::isLaravel9Plus() && ! $embedIsBound && $swiftEmbedAvailable) {
+                $this->getMailer()->getSwiftMailer()->registerPlugin(new $swiftEmbedImagesListener(config()->get('mail-auto-embed')));
             }
 
             $this->getMailer()->html($html, function (Message $message) use ($subject) {

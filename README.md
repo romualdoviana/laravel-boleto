@@ -13,6 +13,14 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 
 [Documentação do Projeto](https://laravel-boleto.readthedocs.io/)
 
+## Integrações Opcionais
+
+Para embed automático de imagens em templates de e-mail, instale também:
+
+```bash
+composer require eduardokum/laravel-mail-auto-embed
+```
+
 ## Doações
 
 **Estamos em busca de *doadores* e *patrocinadores* para ajudar a financiar parte do desenvolvimento deste pacote** 
