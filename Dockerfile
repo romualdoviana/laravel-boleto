@@ -1,24 +1,25 @@
-FROM php:8.4-fpm-alpine3.20
+FROM php:8.4-cli-alpine3.20
 
 RUN apk add --no-cache \
-  openssl \
   bash \
-  unzip \
-  vim \
-  $PHPIZE_DEPS \
-  libzip-dev \
-  zlib-dev \
+  curl-dev \
+  freetype-dev \
+  git \
   icu-dev \
-  libpng-dev
+  libjpeg-turbo-dev \
+  libpng-dev \
+  libxml2-dev \
+  libzip-dev \
+  oniguruma-dev \
+  unzip \
+  zlib-dev
 
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install zip intl gd
-RUN docker-php-ext-enable zip
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-configure intl \
+  && docker-php-ext-install -j"$(nproc)" curl gd intl mbstring xml zip
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /var/www
 
-EXPOSE 9000
-
-ENTRYPOINT ["php-fpm"]
+ENTRYPOINT ["bash"]

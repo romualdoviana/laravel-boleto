@@ -7,9 +7,9 @@
 # Laravel Boleto
 Pacote para gerar boletos, remessas e leitura de retorno.
 
-**Projeto atualizado para o PHP 7.2, utilize sempre a última versão do PHP**
+**Projeto atualizado para PHP 8.2+**
 
-**Suporte ao Laravel 6 em diante**
+**Suporte ao Laravel 11, 12 e 13**
 
 [Documentação do Projeto](https://laravel-boleto.readthedocs.io/)
 

@@ -1,12 +1,44 @@
+x-package-test: &package-test
+  build:
+    context: .
+    dockerfile: Dockerfile
+  working_dir: /tmp/laravel-boleto
+  entrypoint: ["/bin/sh", "-lc"]
+  environment:
+    COMPOSER_CACHE_DIR: /tmp/composer-cache
+  volumes:
+    - ./:/workspace:ro
+    - composer-cache:/tmp/composer-cache
+  tty: true
+  command: >
+    rm -rf /tmp/laravel-boleto &&
+    mkdir -p /tmp/laravel-boleto &&
+    cp -a /workspace/. /tmp/laravel-boleto/ &&
+    composer require "laravel/framework:$${LARAVEL_VERSION}" "orchestra/testbench:$${TESTBENCH_VERSION}" --no-interaction --no-update &&
+    composer update --prefer-stable --prefer-dist --no-interaction &&
+    vendor/bin/phpunit -c phpunit_gt_81.xml --no-coverage
+
 services:
-  laravel.boleto:
-    build: .
-    container_name: laravel-boleto
-    tty: true
-    volumes:
-      - '.:/var/www'
-    networks:
-      - laravel-boleto-network
-networks:
-  laravel-boleto-network:
-    driver: bridge
+  tests-laravel-11:
+    <<: *package-test
+    environment:
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      LARAVEL_VERSION: "11.*"
+      TESTBENCH_VERSION: "9.*"
+
+  tests-laravel-12:
+    <<: *package-test
+    environment:
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      LARAVEL_VERSION: "12.*"
+      TESTBENCH_VERSION: "10.*"
+
+  tests-laravel-13:
+    <<: *package-test
+    environment:
+      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      LARAVEL_VERSION: "13.*"
+      TESTBENCH_VERSION: "11.*"
+
+volumes:
+  composer-cache:
