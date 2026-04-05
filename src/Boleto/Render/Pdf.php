@@ -34,6 +34,10 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     protected $showInstrucoes = true;
 
+    protected $showContagemBoletos = true;
+
+    protected $showInfoEmpresa = true;
+
     protected $desc = 3; // tamanho célula descrição
 
     protected $cell = 4; // tamanho célula dado
@@ -82,7 +86,7 @@ class Pdf extends AbstractPdf implements PdfContract
     protected function instrucoes($i)
     {
         $this->SetFont($this->PadraoFont, '', 8);
-        if ($this->totalBoletos > 1) {
+        if ($this->totalBoletos > 1 && $this->showContagemBoletos) {
             $this->SetAutoPageBreak(true);
             $this->SetY(5);
             $this->Cell(30, 10, date('d/m/Y H:i:s'));
@@ -135,20 +139,33 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Ln(2);
         $this->SetFont($this->PadraoFont, '', $this->fdes);
 
-        $logo = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
-        $ext = pathinfo($logo, PATHINFO_EXTENSION);
+        $nomeBeneficiario = '';
+        $documentoBeneficiario = '';
+        $enderecoBeneficiario = '';
+        $cepCidadeUfBeneficiario = '';
 
-        if ($this->boleto[$i]->getLogo() && ! empty($this->boleto[$i]->getLogo())) {
-            $this->Image($this->boleto[$i]->getLogo(), 20, ($this->GetY()), 0, 12, $ext);
+        if ($this->showInfoEmpresa) {
+            $logo = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
+            $ext = pathinfo($logo, PATHINFO_EXTENSION);
+
+            if ($this->boleto[$i]->getLogo() && ! empty($this->boleto[$i]->getLogo())) {
+                $this->Image($this->boleto[$i]->getLogo(), 20, ($this->GetY()), 0, 12, $ext);
+            }
+
+            $nomeBeneficiario = $this->boleto[$i]->getBeneficiario()->getNome();
+            $documentoBeneficiario = $this->boleto[$i]->getBeneficiario()->getDocumento();
+            $enderecoBeneficiario = $this->boleto[$i]->getBeneficiario()->getEndereco();
+            $cepCidadeUfBeneficiario = $this->boleto[$i]->getBeneficiario()->getCepCidadeUf();
         }
+
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getNome()), 0, 1);
+        $this->Cell(0, $this->desc, $this->_($nomeBeneficiario), 0, 1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getDocumento(), '##.###.###/####-##'), 0, 1);
+        $this->Cell(0, $this->desc, $documentoBeneficiario ? $this->_($documentoBeneficiario, '##.###.###/####-##') : '', 0, 1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco()), 0, 1);
+        $this->Cell(0, $this->desc, $this->_($enderecoBeneficiario), 0, 1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getCepCidadeUf()), 0, 1);
+        $this->Cell(0, $this->desc, $this->_($cepCidadeUfBeneficiario), 0, 1);
         $this->Ln(8);
 
         return $this;
@@ -462,9 +479,9 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->Cell(13, 6, 'Valor:', '', 0, 'L');
             $this->SetFont($this->PadraoFont, '', $this->fdes);
             $this->Cell(0, 6, Util::nReal($this->boleto[$i]->getValor()), '', 1, 'L');
-//            $this->Cell(0, $this->cell, 'Pague com PIX', '', 1, 'C');
-//            $this->Image($this->boleto[$i]->getPixQrCodeBase64(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
-//            $this->Line($xStartPix, $yStartPix, $xStartPix, $yEndPix);
+            //            $this->Cell(0, $this->cell, 'Pague com PIX', '', 1, 'C');
+            //            $this->Image($this->boleto[$i]->getPixQrCodeBase64(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
+            //            $this->Line($xStartPix, $yStartPix, $xStartPix, $yEndPix);
 
             $this->Image($this->boleto[$i]->getPixQrCodeBase64(), 170, $yOriginal + 1, 20, 20, 'png');
 
@@ -519,6 +536,26 @@ class Pdf extends AbstractPdf implements PdfContract
     public function hideInstrucoes()
     {
         $this->showInstrucoes = false;
+
+        return $this;
+    }
+
+    /**
+     * @return Pdf
+     */
+    public function hideContagemBoletos()
+    {
+        $this->showContagemBoletos = false;
+
+        return $this;
+    }
+
+    /**
+     * @return Pdf
+     */
+    public function hideInfoEmpresa()
+    {
+        $this->showInfoEmpresa = false;
 
         return $this;
     }
