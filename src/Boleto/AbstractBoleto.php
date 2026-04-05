@@ -2137,9 +2137,9 @@ abstract class AbstractBoleto implements BoletoContract
             if (! $this->getPixChaveTipo()) {
                 throw new ValidationException('Informado chave de Pix porém não foi informado o tipo de chave');
             }
-//            if (! $this->getID()) {
-//                throw new ValidationException('ID necessita ser informado para geração da cobrança');
-//            }
+            //            if (! $this->getID()) {
+            //                throw new ValidationException('ID necessita ser informado para geração da cobrança');
+            //            }
 
             switch ($this->getPixChaveTipo()) {
                 case self::TIPO_CHAVEPIX_CPF:
@@ -2197,7 +2197,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @return string
      * @throws ValidationException
      */
-    public function renderPDF($print = false, $instrucoes = true)
+    public function renderPDF($print = false, $instrucoes = true, $infoEmpresa = true)
     {
         if ($this->codigoBanco == 104) {
             $pdf = new PdfCaixa();
@@ -2207,6 +2207,7 @@ abstract class AbstractBoleto implements BoletoContract
         $pdf->addBoleto($this);
         ! $print || $pdf->showPrint();
         $instrucoes || $pdf->hideInstrucoes();
+        $infoEmpresa || $pdf->hideInfoEmpresa();
 
         return $pdf->gerarBoleto('S', null);
     }
